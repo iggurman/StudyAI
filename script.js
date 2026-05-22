@@ -56,17 +56,14 @@ function updateStats() {
 
 // ── API CALL ──
 async function callAI(prompt) {
-  const API_KEY = "/api/chat"; // your Groq key
-
   try {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${API_KEY}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant", // ✅ FIXED MODEL
+        model: "llama-3.1-8b-instant",
         messages: [
           {
             role: "user",
@@ -78,20 +75,22 @@ async function callAI(prompt) {
     });
 
     const data = await res.json();
-    console.log("Groq response:", data);
+
+    console.log("API response:", data);
 
     if (data.error) {
-      throw new Error(data.error.message);
+      throw new Error(data.error);
     }
 
-if (!data.choices || !data.choices[0]) {
-  throw new Error("Invalid response from Groq");
-}
+    if (!data.choices || !data.choices[0]) {
+      throw new Error("Invalid AI response");
+    }
 
-return data.choices[0].message.content;
+    return data.choices[0].message.content;
+
   } catch (err) {
-    console.error("Groq ERROR:", err);
-    throw err;
+    console.error("AI ERROR:", err);
+    return "AI request failed.";
   }
 }
 
